@@ -1,0 +1,49 @@
+# Example pendulum linearized without noise
+############################################
+python driver.py --alpha 1 --dataset pendulum_lin --noise 0.0 --lr 1e-2 --epochs 600 --batch 64 --folder results_det_pendulum_lin_6 --lamb 1 --steps 8 --bottleneck 6  --lr_update 30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 0 --seed 1
+
+python driver.py --alpha 1 --dataset pendulum_lin --noise 0.0 --lr 1e-2 --epochs 600 --batch 64 --folder results_det_back_pendulum_lin_6 --lamb 1 --steps 8 --bottleneck 6  --lr_update 30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 1 --steps_back 8 --nu 1e-1 --eta 1e-2 --seed 1
+
+
+# Example pendulum linearized with noise 0.03
+##############################################
+python driver.py --alpha 1 --dataset pendulum_lin --noise 0.03 --lr 1e-2 --epochs 600 --batch 64 --folder results_det_pendulum_lin_6_noise_03 --lamb 1 --steps 8 --bottleneck 6 --lr_update 30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 0 --wd 0 --seed 1
+
+python driver.py --alpha 1 --dataset pendulum_lin --noise 0.03 --lr 1e-2 --epochs 600 --batch 64 --folder results_det_back_pendulum_lin_6_noise_03 --lamb 1 --steps 8 --bottleneck 6  --lr_update 30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 1 --steps_back 8 --nu 1e-1  --eta 1e-2 --seed 1
+
+
+
+# Example pendulum with without noise
+##############################################
+python driver.py --alpha 1 --dataset pendulum --noise 0.0 --lr 1e-2 --epochs 600 --batch 64 --folder results_det_pendulum_6 --lamb 1 --steps 8 --bottleneck 6  --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 0 --seed 0
+
+python driver.py --alpha 1 --dataset inverted_pendulum --noise 0.0 --lr 1e-2 --epochs 200 --batch 64 --folder results_det_inverted_pendulum_6 --lamb 1 --steps 8 --bottleneck 16  --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 0 --seed 0
+
+
+python driver.py --alpha 1 --dataset pendulum --noise 0.0 --lr 1e-2 --epochs 600 --batch 64 --folder results_det_back_pendulum_6 --lamb 1 --steps 8 --bottleneck 6  --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 1 --steps_back 8 --nu 1e-1 --eta 1e-2 --seed 0
+
+
+
+# Example pendulum with noise 0.08
+##############################################
+python driver.py --alpha 1 --dataset pendulum --noise 0.08 --lr 1e-2 --epochs 600 --batch 64 --folder results_det_pendulum_6_noise_03 --lamb 1 --steps 8 --bottleneck 6  --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 0 --seed 7
+
+python driver.py --alpha 1 --dataset pendulum --noise 0.08 --lr 1e-2 --epochs 100 --batch 64 --folder results_det_back_pendulum_6_noise_03 --lamb 1 --steps 8 --bottleneck 6  --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 1 --steps_back 8 --nu 1e-1 --eta 1e-2 --seed 7
+
+
+
+python driver.py --alpha 1 --dataset inverted_double_pendulum --noise 0.0 --lr 1e-2 --epochs 500 --batch 64 --folder results_det_inverted_double_pendulum_4 --lamb 1 --steps 8 --bottleneck 4  --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 0 --seed 0
+
+python driver.py --alpha 1 --dataset inverted_double_pendulum --noise 0.0 --lr 1e-2 --epochs 100 --batch 64 --folder results_det_inverted_double_pendulum_11 --lamb 1 --steps 8 --bottleneck 11  --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 50000 --backward 0 --seed 0
+
+python driver.py --alpha 1 --dataset inverted_double_pendulum --noise 0.0 --lr 1e-2 --epochs 500 --batch 64 --folder results_det_inverted_double_pendulum_22 --lamb 1 --steps 8 --bottleneck 22 --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 0 --seed 0
+
+python driver.py --alpha 1 --dataset inverted_double_pendulum --noise 0.0 --lr 1e-2 --epochs 500 --batch 64 --folder results_det_inverted_double_pendulum_44 --lamb 1 --steps 8 --bottleneck 44 --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 0 --seed 0
+
+
+
+python driver.py --alpha 1 --dataset inverted_double_pendulum --noise 0.0 --lr 1e-2 --epochs 200 --batch 64 --folder results_det_inverted_double_pendulum_4 --lamb 1 --steps 8 --bottleneck 4  --lr_update  30 200 400 500 --lr_decay 0.2 --pred_steps 1000 --backward 0 --seed 0
+
+python driver.py --alpha 1 --dataset inverted_double_pendulum --noise 0.0 --lr 1e-2 --epochs 100 --batch 64 --folder results/inverted_double_pendulum_s1b8 --lamb 1 --steps 1 --bottleneck 8 --lr_update  30 200 400 500 --lr_decay 0.2 --backward 0 --seed 0 --pred_steps 1000 --train_size 100000 --test_size 10000
+
+python driver.py --alpha 1 --dataset inverted_pendulum --noise 0.0 --lr 1e-2 --epochs 100 --batch 64 --folder results/inverted_pendulum_s1b8 --lamb 1 --steps 2 --bottleneck 8 --lr_update  30 200 400 500 --lr_decay 0.2 --backward 0 --seed 0 --pred_steps 1000 --train_size 100000 --test_size 10000

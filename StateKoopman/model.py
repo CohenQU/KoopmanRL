@@ -87,8 +87,6 @@ class dynamics_back(nn.Module):
         return x
 
 
-
-
 class koopmanAE(nn.Module):
     def __init__(self, m, n, b, steps, steps_back, alpha = 1, init_scale=1):
         super(koopmanAE, self).__init__()

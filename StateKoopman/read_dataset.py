@@ -7,6 +7,7 @@ from scipy.special import ellipj, ellipk
 
 import torch
 
+prefix = "/Users/yxqu/Desktop/Research/Koopman/data"
 #******************************************************************************
 # Read in data
 #******************************************************************************
@@ -19,7 +20,7 @@ def data_from_name(name, noise = 0.0, theta=2.4, train_size=100000, test_size=10
     #     return inverted_pendulum(train_size, test_size)
     # if name == 'inverted_double_pendulum':
     #     return inverted_double_pendulum(train_size, test_size)
-    if name == "ant":
+    if name == "Ant-v3":
         return mujoco("Ant-v3", train_size, test_size)
     if name == "inverted_pendulum":
         return mujoco("InvertedPendulum-v2", train_size, test_size)
@@ -29,7 +30,7 @@ def data_from_name(name, noise = 0.0, theta=2.4, train_size=100000, test_size=10
         raise ValueError('dataset {} not recognized'.format(name))
 
 def inverted_pendulum():
-    path = "/Users/yxqu/Desktop/SummerResearch/SALAS/repo/expert_demonstration/actions/{}/trained.npz".format("InvertedPendulum-v2")
+    path = "{}/{}/trained.npz".format(prefix, "InvertedPendulum-v2")
     raw_data = np.load(path)
     states = raw_data["states"]
     done = raw_data["dones"]
@@ -44,7 +45,7 @@ def inverted_pendulum():
     return X_train, X_test, X_train_clean, X_test_clean, 4, 1
 
 def inverted_double_pendulum(X_train_size, X_test_size):
-    path = "/Users/yxqu/Desktop/SummerResearch/SALAS/repo/expert_demonstration/actions/{}/trained.npz".format("InvertedDoublePendulum-v2")
+    path = "{}/{}/trained.npz".format(prefix, "InvertedDoublePendulum-v2")
     raw_data = np.load(path)
     states = raw_data["states"]
     dones = raw_data["dones"]
@@ -85,7 +86,7 @@ def mujoco(env_id, X_train_size, X_test_size):
     print("X_train_size: ", X_train_size)
     print("X_test_size: ", X_test_size)
 
-    path = "/Users/yxqu/Desktop/SummerResearch/SALAS/repo/expert_demonstration/actions/{}/trained.npz".format(env_id)
+    path = "{}/{}/trained.npz".format(prefix, env_id)
     raw_data = np.load(path)
     states = raw_data["states"]
     dones = raw_data["dones"]
@@ -117,12 +118,6 @@ def mujoco(env_id, X_train_size, X_test_size):
 
     return X_train, X_test, X_train_clean, X_test_clean, indices_train, indices_test, dim, 1
 
-# def rescale(data)
-#     # rescale data to [-1,1]
-#     # Xmin = data.min()
-#     # Xmax = data.max()
-#     # data = 2*(data - Xmin)/(Xmax - Xmin) - 1
-#     # return data
 
 def rescale(Xsmall, Xsmall_test):
     #******************************************************************************

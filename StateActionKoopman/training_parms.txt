@@ -47,3 +47,7 @@ python driver.py --alpha 1 --dataset inverted_double_pendulum --noise 0.0 --lr 1
 python driver.py --alpha 1 --dataset inverted_double_pendulum --noise 0.0 --lr 1e-2 --epochs 100 --batch 64 --folder results/inverted_double_pendulum_s1b8 --lamb 1 --steps 1 --bottleneck 8 --lr_update  30 200 400 500 --lr_decay 0.2 --backward 0 --seed 0 --pred_steps 1000 --train_size 100000 --test_size 10000
 
 python driver.py --alpha 1 --dataset inverted_pendulum --noise 0.0 --lr 1e-2 --epochs 100 --batch 64 --folder results/inverted_pendulum_s1b8 --lamb 1 --steps 2 --bottleneck 8 --lr_update  30 200 400 500 --lr_decay 0.2 --backward 0 --seed 0 --pred_steps 1000 --train_size 100000 --test_size 10000
+
+
+
+python driver.py --alpha 4 --dataset Ant-v3 --noise 0.0 --lr 1e-2 --epochs 50 --batch 64 --folder results/ant-v3 --lamb 1 --steps 4 --bottleneck 8 --lr_update  30 200 400 500 --lr_decay 0.2 --backward 0 --seed 0 --pred_steps 1000 --train_size 100000 --test_size 10000

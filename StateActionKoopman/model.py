@@ -1,9 +1,10 @@
 from torch import nn
 import torch
 
-def gaussian_init_(n_units, std=1):    
-    sampler = torch.distributions.Normal(torch.Tensor([0]), torch.Tensor([std/n_units]))
-    Omega = sampler.sample((n_units, n_units))[..., 0]  
+def gaussian_init_(nodes_in_layer1, nodes_in_layer2, std=1):    
+    sampler = torch.distributions.Normal(torch.Tensor([0]), torch.Tensor([std/nodes_in_layer2]))
+    Omega = sampler.sample((nodes_in_layer2, nodes_in_layer1))[..., 0]  
+    print("Omega.shape = ", Omega.shape)
     return Omega
 
 
@@ -63,13 +64,14 @@ class decoderNet(nn.Module):
 
 
 class dynamics(nn.Module):
-    def __init__(self, state_dim, action_dim, init_scale):
+    def __init__(self, b, action_dim, init_scale):
         super(dynamics, self).__init__()
-        self.dynamics = nn.Linear(state_dim + action_dim, state_dim, bias=False)
-        self.dynamics.weight.data = gaussian_init_(state_dim, std=1)           
-        U, _, V = torch.svd(self.dynamics.weight.data)
-        self.dynamics.weight.data = torch.mm(U, V.t()) * init_scale
-
+        self.dynamics = nn.Linear(b + action_dim, b, bias=False)
+        #self.dynamics.weight.data = gaussian_init_(b + action_dim, b, std=1)           
+        #U, _, V = torch.svd(self.dynamics.weight.data)
+        #print("U.shape = ", U.shape)
+        #print("V.shape = ", V.shape)
+        #self.dynamics.weight.data = torch.mm(U, V.t()) * init_scale
         
     def forward(self, x):
         x = self.dynamics(x)
@@ -77,9 +79,9 @@ class dynamics(nn.Module):
 
 
 class dynamics_back(nn.Module):
-    def __init__(self, state_dim, action_dim, omega):
+    def __init__(self, b, action_dim, omega):
         super(dynamics_back, self).__init__()
-        self.dynamics = nn.Linear(state_dim+action_dim, state_dim, bias=False)
+        self.dynamics = nn.Linear(b+action_dim, b, bias=False)
         self.dynamics.weight.data = torch.pinverse(omega.dynamics.weight.data.t())     
 
     def forward(self, x):
@@ -96,28 +98,32 @@ class koopmanAE(nn.Module):
         self.action_dim = action_dim
         
         self.encoder = encoderNet(state_dim, 1, b, ALPHA = alpha)
-        self.dynamics = dynamics(state_dim, action_dim, init_scale)
-        self.backdynamics = dynamics_back(state_dim, action_dim, self.dynamics)
+        self.dynamics = dynamics(b, action_dim, init_scale)
+        #self.backdynamics = dynamics_back(b, action_dim, self.dynamics)
         self.decoder = decoderNet(state_dim, 1, b, ALPHA = alpha)
 
 
-    def forward(self, x, mode='forward'):
+    def forward(self, state, actions, mode='forward'):
         out = []
         out_back = []
-        states = x[:, :self.state_dim]
-        actions = x[:, ]
+        
         z = self.encoder(state.contiguous())
         q = z.contiguous()
 
-        
         if mode == 'forward':
             for i in range(self.steps):
+                a = actions[i].reshape(-1, 1, self.action_dim)
+                #print("a.shape = ", a.shape)
+                q = torch.cat((q, a), dim=2)
+                #print("q.shape = ", q.shape)
                 q = self.dynamics(q)
-                out.append(self.decoder(torch.cat(q, a), dim=1))
-            a = actions[0]
+                #print("q.shape = ", q.shape)
+                #print("self.decoder(q).shape = ", self.decoder(q).shape)
+                out.append(self.decoder(q))
+
             q = z.contiguous()
-            out.append(self.decoder(torch.cat(q, a), dim=1))
-            return out, out_back    
+            out.append(self.decoder(q))
+            return out, out_back
 
         if mode == 'backward':
             for _ in range(self.steps_back):

@@ -25,6 +25,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--exp-name", type=str, default=os.path.basename(__file__).rstrip(".py"), help="the name of this experiment")
     parser.add_argument("--seed", type=int, default=None, help="seed of the experiment")
+    parser.add_argument("--run-id", type=int, default=None)
     parser.add_argument("--torch-deterministic", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True, help="if toggled, `torch.backends.cudnn.deterministic=False`")
     parser.add_argument("--cuda", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True, help="if toggled, cuda will be enabled by default")
     parser.add_argument("--track", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True, help="if toggled, this experiment will be tracked with Weights and Biases")
@@ -44,6 +45,12 @@ def parse_args():
     parser.add_argument("--learning-starts", type=int, default=10e3, help="timestep to start learning")
     parser.add_argument("--policy-frequency", type=int, default=1, help="the frequency of training policy (delayed)")
     parser.add_argument("--noise-clip", type=float, default=0.5, help="noise clip parameter of the Target Policy Smoothing Regularization")
+
+    parser.add_argument("--eval-freq", type=int, default=10000, help="evaluate policy every eval_freq timesteps")
+    parser.add_argument("--eval-episodes", type=int, default=10, help="number of episodes over which policies are evaluated")
+    parser.add_argument("--results-dir", "-f", type=str, default="results", help="directory in which results will be saved")
+    parser.add_argument("--results-subdir", "-s", type=str, default="", help="results will be saved to <results_dir>/<env_id>/<subdir>/")
+
     args = parser.parse_args()
     # fmt: on
     return args
@@ -127,9 +134,13 @@ if __name__ == "__main__":
 
     args = parse_args()
     # run_name = f"{args.env_id}__{args.exp_name}__{args.seed}__{int(time.time())}"
-    save_dir = f"results/{args.env_id}/ddpg"
-    run_id = get_latest_run_id(save_dir=save_dir) + 1
-    save_dir += f"/run_{run_id}"
+    save_dir = f"{args.results_dir}/{args.env_id}/{args.results_subdir}/ppo_ros"
+    if args.run_id:
+        save_dir += f"/run_{args.run_id}"
+    else:
+        run_id = get_latest_run_id(save_dir=save_dir) + 1
+        save_dir += f"/run_{run_id}"
+    print(f'Results will be saved to {save_dir}')
 
     if args.seed is None:
         args.seed = np.random.randint(2 ** 32 - 1)
@@ -165,7 +176,7 @@ if __name__ == "__main__":
     )
 
     eval_envs = gym.vector.SyncVectorEnv([make_env(args.env_id, args.seed, 0, args.capture_video, save_dir)])
-    eval_module = Evaluate(model=actor, eval_env=eval_envs, n_eval_episodes=10, log_path=save_dir, device=device)
+    eval_module = Evaluate(model=actor, eval_env=eval_envs, n_eval_episodes=args.eval_episodes, log_path=save_dir, device=device)
 
     # Save config
     with open(os.path.join(save_dir, "config.yml"), "w") as f:
@@ -229,7 +240,7 @@ if __name__ == "__main__":
             for param, target_param in zip(qf1.parameters(), qf1_target.parameters()):
                 target_param.data.copy_(args.tau * param.data + (1 - args.tau) * target_param.data)
 
-        if global_step % 1000 == 0:
+        if global_step % args.eval_freq == 0:
             current_time = time.time() - start_time
             print(f"Training time: {int(current_time)} \tsteps per sec: {int(global_step / current_time)}")
             eval_module.evaluate(global_step)
